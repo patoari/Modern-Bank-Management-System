@@ -7,14 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 class Atm extends Model
 {
     protected $fillable = [
-        'atm_id','atm_name','branch_id','location_type','address',
-        'city','state','latitude','longitude',
-        'status','cash_available','last_cash_replenishment',
+        'atm_id', 'branch_id', 'location_name', 'latitude', 'longitude',
+        'address', 'city', 'state', 'postal_code', 'landmark',
+        'atm_type', 'status', 'opening_time', 'closing_time', 'operates_24_7',
+        'cash_available', 'last_cash_refill', 'installation_date',
     ];
+
     protected $casts = [
-        'cash_available'=>'decimal:2',
-        'last_cash_replenishment'=>'datetime',
-        'latitude'=>'decimal:8','longitude'=>'decimal:8',
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8',
+        'operates_24_7' => 'boolean',
+        'last_cash_refill' => 'datetime',
     ];
-    public function branch() { return $this->belongsTo(Branch::class); }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 }
+

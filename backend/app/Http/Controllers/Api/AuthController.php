@@ -71,4 +71,61 @@ class AuthController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Password changed successfully.']);
     }
+
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $this->authService->sendPasswordResetLink($request->email);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'If an account exists with this email, a password reset link has been sent.',
+        ]);
+    }
+
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'email'    => 'required|email',
+            'token'    => 'required|string',
+            'password' => ['required', 'confirmed', Password::min(10)->mixedCase()->numbers()->symbols()],
+        ]);
+
+        $result = $this->authService->resetPassword($data['email'], $data['token'], $data['password']);
+
+        return response()->json($result, $result['success'] ? 200 : 422);
+    }
+
+    public function enableTwoFactor(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'channel' => 'required|in:email,sms',
+        ]);
+
+        $result = $this->authService->enableTwoFactor($request->user(), $data['channel']);
+
+        return response()->json($result);
+    }
+
+    public function disableTwoFactor(Request $request): JsonResponse
+    {
+        $success = $this->authService->disableTwoFactor($request->user());
+
+        return response()->json([
+            'success' => $success,
+            'message' => $success ? '2FA disabled successfully.' : 'Failed to disable 2FA.',
+        ]);
+    }
+
+    public function verifyOtp(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'code' => 'required|string|size:6',
+        ]);
+
+        $result = $this->authService->verifyOtp($request->user(), $data['code']);
+
+        return response()->json($result);
+    }
 }

@@ -3,19 +3,40 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StandingInstruction extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
-        'instruction_number','account_id','instruction_type',
-        'beneficiary_account_number','beneficiary_name','ifsc_code',
-        'amount','frequency','start_date','end_date','next_execution_date',
-        'status','description','execution_count','last_executed_at',
+        'from_account_id', 'to_account_id', 'beneficiary_id', 'instruction_name',
+        'amount', 'currency_code', 'frequency', 'debit_type', 'max_amount',
+        'start_date', 'end_date', 'status', 'remarks', 'last_execution_at',
+        'next_execution_at', 'executed_count',
     ];
+
     protected $casts = [
-        'amount'=>'decimal:2',
-        'start_date'=>'date','end_date'=>'date','next_execution_date'=>'date',
-        'last_executed_at'=>'datetime',
+        'amount' => 'decimal:18,2',
+        'max_amount' => 'decimal:18,2',
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'last_execution_at' => 'datetime',
+        'next_execution_at' => 'datetime',
     ];
-    public function account() { return $this->belongsTo(Account::class); }
+
+    public function fromAccount()
+    {
+        return $this->belongsTo(Account::class, 'from_account_id');
+    }
+
+    public function toAccount()
+    {
+        return $this->belongsTo(Account::class, 'to_account_id');
+    }
+
+    public function beneficiary()
+    {
+        return $this->belongsTo(Beneficiary::class);
+    }
 }

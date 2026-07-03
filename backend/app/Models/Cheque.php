@@ -3,19 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cheque extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
-        'cheque_number','account_id','cheque_book_id','amount',
-        'payee_name','cheque_date','presentation_date','clearance_date',
-        'status','transaction_id','bounce_reason','stop_reason',
+        'cheque_number', 'cheque_book_id', 'account_id', 'status',
+        'issued_at', 'cleared_at', 'payee_name', 'amount',
+        'stop_reason', 'stopped_at', 'stopped_by', 'bounce_reason', 'bounced_at',
     ];
+
     protected $casts = [
-        'amount'=>'decimal:2',
-        'cheque_date'=>'date','presentation_date'=>'date','clearance_date'=>'date',
+        'amount' => 'decimal:18,2',
+        'issued_at' => 'datetime',
+        'cleared_at' => 'datetime',
+        'stopped_at' => 'datetime',
+        'bounced_at' => 'datetime',
     ];
-    public function account()     { return $this->belongsTo(Account::class); }
-    public function chequeBook()  { return $this->belongsTo(ChequeBook::class); }
-    public function transaction() { return $this->belongsTo(Transaction::class); }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
+    }
+
+    public function chequeBook()
+    {
+        return $this->belongsTo(ChequeBook::class);
+    }
 }

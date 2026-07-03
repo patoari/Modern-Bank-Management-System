@@ -28,6 +28,14 @@ const SettingsView        = () => import('@/views/settings/SettingsView.vue')
 const ProfileView         = () => import('@/views/profile/ProfileView.vue')
 const NotFoundView        = () => import('@/views/NotFoundView.vue')
 
+// New Feature Pages
+const BeneficiariesView         = () => import('@/views/beneficiaries/BeneficiariesView.vue')
+const StandingInstructionsView  = () => import('@/views/standing-instructions/StandingInstructionsView.vue')
+const NotificationsView         = () => import('@/views/notifications/NotificationsView.vue')
+const ChequesView               = () => import('@/views/cheques/ChequesView.vue')
+const ComplaintsView            = () => import('@/views/complaints/ComplaintsView.vue')
+const ResetPasswordView          = () => import('@/views/auth/ResetPasswordView.vue')
+
 const routes = [
   {
     path: '/',
@@ -37,8 +45,8 @@ const routes = [
     path: '/auth',
     component: AuthLayout,
     children: [
-      { path: 'login',           name: 'login',            component: LoginView },
-      { path: 'forgot-password', name: 'forgot-password',  component: () => import('@/views/auth/ForgotPasswordView.vue') },
+      { path: 'login',            name: 'login',            component: LoginView },
+      { path: 'forgot-password',  name: 'forgot-password',  component: ResetPasswordView },
     ]
   },
   {
@@ -46,23 +54,29 @@ const routes = [
     component: DashboardLayout,
     meta: { requiresAuth: true },
     children: [
-      { path: 'dashboard',        name: 'dashboard',        component: DashboardView },
-      { path: 'customers',        name: 'customers',        component: CustomersView },
-      { path: 'customers/:id',    name: 'customer-detail',  component: CustomerDetailView },
-      { path: 'accounts',         name: 'accounts',         component: AccountsView },
-      { path: 'accounts/:id',     name: 'account-detail',   component: AccountDetailView },
-      { path: 'transactions',     name: 'transactions',     component: TransactionsView },
-      { path: 'loans',            name: 'loans',            component: LoansView },
-      { path: 'loans/:id',        name: 'loan-detail',      component: LoanDetailView },
-      { path: 'cards',            name: 'cards',            component: CardsView },
-      { path: 'deposits',         name: 'deposits',         component: DepositsView },
-      { path: 'branches',         name: 'branches',         component: BranchesView },
-      { path: 'users',            name: 'users',            component: UsersView },
-      { path: 'reports',          name: 'reports',          component: ReportsView },
-      { path: 'audit-logs',       name: 'audit-logs',       component: AuditLogsView },
-      { path: 'compliance',       name: 'compliance',       component: ComplianceView },
-      { path: 'settings',         name: 'settings',         component: SettingsView },
-      { path: 'profile',          name: 'profile',          component: ProfileView }
+      { path: 'dashboard',           name: 'dashboard',           component: DashboardView },
+      { path: 'customers',           name: 'customers',           component: CustomersView },
+      { path: 'customers/:id',       name: 'customer-detail',     component: CustomerDetailView },
+      { path: 'accounts',            name: 'accounts',            component: AccountsView },
+      { path: 'accounts/:id',        name: 'account-detail',      component: AccountDetailView },
+      { path: 'transactions',        name: 'transactions',        component: TransactionsView },
+      { path: 'loans',               name: 'loans',               component: LoansView },
+      { path: 'loans/:id',           name: 'loan-detail',         component: LoanDetailView },
+      { path: 'cards',               name: 'cards',               component: CardsView },
+      { path: 'deposits',            name: 'deposits',            component: DepositsView },
+      { path: 'branches',            name: 'branches',            component: BranchesView },
+      { path: 'users',               name: 'users',               component: UsersView },
+      { path: 'reports',             name: 'reports',             component: ReportsView },
+      { path: 'audit-logs',          name: 'audit-logs',          component: AuditLogsView },
+      { path: 'compliance',          name: 'compliance',          component: ComplianceView },
+      { path: 'settings',            name: 'settings',            component: SettingsView },
+      { path: 'profile',             name: 'profile',             component: ProfileView },
+      // New Features
+      { path: 'beneficiaries',       name: 'beneficiaries',       component: BeneficiariesView },
+      { path: 'standing-instructions', name: 'standing-instructions', component: StandingInstructionsView },
+      { path: 'notifications',       name: 'notifications',       component: NotificationsView },
+      { path: 'cheques',             name: 'cheques',             component: ChequesView },
+      { path: 'complaints',          name: 'complaints',          component: ComplaintsView },
     ]
   },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView }

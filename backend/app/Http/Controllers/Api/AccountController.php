@@ -77,4 +77,98 @@ class AccountController extends Controller
         $transactions = $this->service->getStatement($account, $data['from_date'], $data['to_date']);
         return response()->json(['success' => true, 'data' => ['account' => $account, 'transactions' => $transactions]]);
     }
+
+    public function exportStatement(Request $request, Account $account)
+    {
+        $this->authorize('view', $account);
+        $data = $request->validate([
+            'from_date' => 'required|date',
+            'to_date'   => 'required|date|after_or_equal:from_date',
+            'format' => 'required|in:pdf,csv',
+        ]);
+
+        $transactions = $this->service->getStatement($account, $data['from_date'], $data['to_date']);
+
+        if ($data['format'] === 'csv') {
+            return $this->exportToCsv($account, $transactions, $data);
+        } else {
+            return $this->exportToPdf($account, $transactions, $data);
+        }
+    }
+
+    private function exportToCsv($account, $transactions, $data)
+    {
+        $filename = 'Statement_' . $account->account_number . '_' . now()->format('YmdHi') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($account, $transactions, $data) {
+            $file = fopen('php://output', 'w');
+            
+            // Header
+            fputcsv($file, [
+                'Bank Account Statement',
+                '',
+                '',
+                '',
+            ]);
+            fputcsv($file, [
+                'Account Number:',
+                $account->account_number,
+                'Period:',
+                $data['from_date'] . ' to ' . $data['to_date'],
+            ]);
+            fputcsv($file, [
+                'Account Title:',
+                $account->account_title,
+                'Balance:',
+                $account->available_balance,
+            ]);
+            fputcsv($file, ['', '', '', '']);
+
+            // Column headers
+            fputcsv($file, [
+                'Date',
+                'Reference',
+                'Description',
+                'Debit',
+                'Credit',
+                'Balance',
+            ]);
+
+            // Transactions
+            foreach ($transactions as $transaction) {
+                fputcsv($file, [
+                    $transaction->created_at->format('Y-m-d'),
+                    $transaction->transaction_ref,
+                    $transaction->transaction_type . ' - ' . $transaction->description,
+                    $transaction->from_account_id == $account->id ? $transaction->amount : '',
+                    $transaction->to_account_id == $account->id ? $transaction->amount : '',
+                    $transaction->available_balance ?? $account->available_balance,
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    private function exportToPdf($account, $transactions, $data)
+    {
+        // This requires DomPDF or similar PDF library
+        // For now, return JSON response with PDF generation instruction
+        return response()->json([
+            'success' => true,
+            'message' => 'PDF export functionality coming soon. Please use CSV format for now.',
+            'data' => [
+                'account' => $account,
+                'transactions' => $transactions,
+                'period' => $data['from_date'] . ' to ' . $data['to_date'],
+            ],
+        ]);
+    }
 }
