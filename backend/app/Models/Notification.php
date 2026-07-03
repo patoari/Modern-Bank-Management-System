@@ -10,11 +10,12 @@ class Notification extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'type', 'channel', 'title', 'message',
-        'read_at', 'reference_type', 'reference_id', 'metadata',
+        'user_id', 'notification_type', 'channel', 'title', 'message',
+        'is_read', 'read_at', 'reference_type', 'reference_id', 'metadata',
     ];
 
     protected $casts = [
+        'is_read' => 'boolean',
         'read_at' => 'datetime',
         'metadata' => 'array',
     ];
